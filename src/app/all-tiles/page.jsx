@@ -30,6 +30,7 @@ const AllTiles = async ({ searchParams }) => {
                                             className="object-cover rounded-xl"
                                             alt={tile.title}
                                             fill
+                                            sizes="md"
                                             src={tile.image}
                                         />
 
