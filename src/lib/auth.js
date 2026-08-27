@@ -10,6 +10,10 @@ export const auth = betterAuth({
 
         client
     }),
+    trustedOrigins: [
+        "http://localhost:3000",
+        "https://tiles-gallery-alpha-two.vercel.app",
+    ],
     emailAndPassword: {
         enabled: true,
     },
