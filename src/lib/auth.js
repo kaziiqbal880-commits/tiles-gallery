@@ -1,3 +1,4 @@
+// lib/auth.js
 import { betterAuth } from "better-auth";
 import { MongoClient } from "mongodb";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
@@ -10,15 +11,14 @@ const options = {
     maxIdleTimeMS: 30000,
 };
 
-let clientPromise;
-
-if (!global._mongoClientPromise) {
-    const client = new MongoClient(uri, options);
-    global._mongoClientPromise = client.connect();
+function getMongoClient() {
+    if (!global._mongoClient) {
+        global._mongoClient = new MongoClient(uri, options);
+    }
+    return global._mongoClient;
 }
-clientPromise = global._mongoClientPromise;
 
-const client = await clientPromise;
+const client = getMongoClient();
 const db = client.db("tiles-app");
 
 export const auth = betterAuth({
