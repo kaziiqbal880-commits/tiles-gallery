@@ -1,20 +1,24 @@
-// lib/auth.js
 import { betterAuth } from "better-auth";
 import { MongoClient } from "mongodb";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 
 const uri = process.env.MONGO_URI;
 
-function getMongoClient() {
-    if (!global._mongoClient) {
-        global._mongoClient = new MongoClient(uri, {
-            maxIdleTimeMS: 60000, // keep sockets alive longer between invocations
-        });
-    }
-    return global._mongoClient;
-}
+const options = {
+    maxPoolSize: 5,
+    minPoolSize: 0,
+    maxIdleTimeMS: 30000,
+};
 
-const client = getMongoClient();
+let clientPromise;
+
+if (!global._mongoClientPromise) {
+    const client = new MongoClient(uri, options);
+    global._mongoClientPromise = client.connect();
+}
+clientPromise = global._mongoClientPromise;
+
+const client = await clientPromise;
 const db = client.db("tiles-app");
 
 export const auth = betterAuth({
@@ -25,7 +29,6 @@ export const auth = betterAuth({
         "http://localhost:3000",
         "https://tiles-gallery-ikba.vercel.app",
     ],
-
     emailAndPassword: {
         enabled: true,
     },
